@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+node_modules
+Thumbs.db
+.DS_Store
+.github
+.vscode
