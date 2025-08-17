@@ -29,5 +29,5 @@ jobs:
           IMAGE_ID=ghcr.io/${{ env.REPOSITORY_NAME }}
           VERSION=${{ github.event.release.tag_name }}
 
-          docker build --tag $IMAGE_ID:$VERSION .
+          docker build --tag $IMAGE_ID:$VERSION --tag $IMAGE_ID:latest .
           docker push $IMAGE_ID:$VERSION
