@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event.pull_request.merged == true &&
-      github.event.pull_request.labels.*.name contains 'release'
+      contains(github.event.pull_request.labels.*.name, 'release')
     steps:
       - uses: actions/checkout@v4
       - name: Build the Docker image
