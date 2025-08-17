@@ -23,7 +23,7 @@ jobs:
 
       - name: Build and push the Docker image
         run: |
-          IMAGE_ID=ghcr.io/${{ toLower(github.repository) }}
+          IMAGE_ID=ghcr.io/${{ toLowerCase(github.repository) }}
           VERSION=${{ github.event.release.tag_name }}
 
           docker build --tag $IMAGE_ID:$VERSION .
