@@ -31,3 +31,4 @@ jobs:
 
           docker build --tag $IMAGE_ID:$VERSION --tag $IMAGE_ID:latest .
           docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:latest
