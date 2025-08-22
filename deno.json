@@ -1,7 +1,12 @@
 {
   "tasks": {
+    "start": "deno serve --port 9999 main.ts",
     "dev": "deno serve --port 9999 --watch main.ts",
-    "start": "deno serve --port 9999 main.ts"
+    "dev:start": "deno task docker:build && deno task docker:up",
+    "dev:stop": "deno task docker:down && sh -c 'docker rmi adriarr:dev'",
+    "docker:build": "sh -c 'docker build -t adriarr:dev .'",
+    "docker:up": "sh -c 'docker compose up'",
+    "docker:down": "sh -c 'docker compose down'"
   },
   "imports": {
     "@hono/hono": "jsr:@hono/hono@^4.9.2"
