@@ -10,3 +10,4 @@ services:
       - TZ=Australia/Melbourne
     # override for dev container
     command: ["deno", "task", "dev"]
+    
