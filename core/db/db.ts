@@ -17,6 +17,7 @@ class Database {
   #db: DatabaseSync;
   #insertEventStatement;
   #selectEventByRowIdStatement;
+  #selectEventsStatement;
 
   constructor(database: DatabaseSync) {
     database.exec(
@@ -24,6 +25,7 @@ class Database {
       CREATE TABLE IF NOT EXISTS events (
         id TEXT PRIMARY KEY,
         createdAt TEXT,
+        processedAt TEXT NULL,
         name TEXT,
         details TEXT
       );
@@ -38,6 +40,16 @@ class Database {
 
     this.#selectEventByRowIdStatement = this.#db.prepare(
       `SELECT * FROM events WHERE ROWID = :rowId`,
+    );
+
+    this.#selectEventsStatement = this.#db.prepare(
+      `
+      SELECT *
+      FROM events
+      WHERE
+        DATE(createdAt) > DATE(:createdAfter)
+      ORDER BY createdAt desc
+      `,
     );
   }
 
@@ -65,6 +77,20 @@ class Database {
     }
   }
 
+  public getEvents(createdAfter?: Date): EventRecord[] | undefined {
+    const minDate = createdAfter || new Date(0);
+
+    const resultRows = this.#selectEventsStatement.all({
+      createdAfter: minDate.toISOString(),
+    });
+
+    if (!resultRows || resultRows.length === 0) {
+      return undefined;
+    }
+
+    return resultRows.map((row) => parseEventRow(row));
+  }
+
   #selectEventByRowId(rowId: number | bigint) {
     const data = this.#selectEventByRowIdStatement.get({ rowId });
     if (!data) return undefined;
@@ -80,6 +106,7 @@ function parseEventRow(
   return {
     id: data.id as string,
     createdAt: new Date(data.createdAt as string),
+    processedAt: data.processedAt ? new Date(data.processedAt as string) : null,
     name: data.name as string,
     details: JSON.parse(data.details as string),
   };
@@ -88,6 +115,7 @@ function parseEventRow(
 export interface EventRecord {
   id: string;
   createdAt: Date;
+  processedAt: Date | null;
   name: string;
   details: JsonValue;
 }
