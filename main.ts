@@ -2,7 +2,6 @@ import { Hono } from "@hono/hono";
 import { logger } from "@hono/hono/logger";
 import { handleCreateEvent } from "./core/api/handle-create-event.ts";
 import { handleGetEvents } from "./core/api/handle-get-events.ts";
-import { Hono } from "jsr:@hono/hono";
 
 const app = new Hono();
 
