@@ -2,9 +2,11 @@ import { Hono } from "@hono/hono";
 import { logger } from "@hono/hono/logger";
 import { handleCreateEvent } from "./core/api/handle-create-event.ts";
 import { handleGetEvents } from "./core/api/handle-get-events.ts";
+import { kv, listenQueueHandler } from "./core/kv/kv.ts";
+
+kv.listenQueue(listenQueueHandler);
 
 const app = new Hono();
-
 app.use(logger());
 
 app.get(

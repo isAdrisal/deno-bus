@@ -1,5 +1,6 @@
 import { Context } from "@hono/hono";
 import { db } from "../db/db.ts";
+import { kv } from "../kv/kv.ts";
 
 export async function handleCreateEvent(c: Context) {
   try {
@@ -21,6 +22,10 @@ export async function handleCreateEvent(c: Context) {
     if (!event) {
       throw new Error("could not create event");
     }
+
+    kv.enqueue(event.id, {
+      delay: 1000,
+    });
 
     return c.json(event, 202);
   } catch (e) {
