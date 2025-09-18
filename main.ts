@@ -1,10 +1,27 @@
-import { Hono } from "jsr:@hono/hono";
+import { Hono } from "@hono/hono";
+import { logger } from "@hono/hono/logger";
+import { handleCreateEvent } from "./core/api/handle-create-event.ts";
+import { handleGetEvents } from "./core/api/handle-get-events.ts";
+import { kv, listenQueueHandler } from "./core/kv/kv.ts";
+
+kv.listenQueue(listenQueueHandler);
 
 const app = new Hono();
+app.use(logger());
 
 app.get(
   "/healthz",
-  (c) => c.json({ status: "ok", message: "service is healthy" }),
+  (c) => c.text("ok"),
+);
+
+app.get(
+  "/events",
+  (c) => handleGetEvents(c),
+);
+
+app.post(
+  "/events/create",
+  (c) => handleCreateEvent(c),
 );
 
 export default {
