@@ -16,6 +16,7 @@ const database = new DatabaseSync("./config/service.db");
 class Database {
   #db: DatabaseSync;
   #insertEventStatement;
+  #selectEventByIdStatement;
   #selectEventByRowIdStatement;
   #selectEventsStatement;
 
@@ -36,6 +37,10 @@ class Database {
 
     this.#insertEventStatement = this.#db.prepare(
       `INSERT INTO events (id, createdAt, name, details) VALUES (:id, :createdAt, :name, :details)`,
+    );
+
+    this.#selectEventByIdStatement = this.#db.prepare(
+      `SELECT * FROM events WHERE id = :id`,
     );
 
     this.#selectEventByRowIdStatement = this.#db.prepare(
@@ -75,6 +80,18 @@ class Database {
     } catch (e) {
       console.error("could not insert new event", { cause: e });
     }
+  }
+
+  public getEventById(id: string): EventRecord | undefined {
+    const resultRow = this.#selectEventByIdStatement.get({
+      id,
+    });
+
+    if (!resultRow) {
+      return undefined;
+    }
+
+    return parseEventRow(resultRow);
   }
 
   public getEvents(createdAfter?: Date): EventRecord[] | undefined {
