@@ -19,16 +19,17 @@ class Database {
   #selectEventByIdStatement;
   #selectEventByRowIdStatement;
   #selectEventsStatement;
+  #updateEventProcessAtByIdStatement;
 
   constructor(database: DatabaseSync) {
     database.exec(
       `
       CREATE TABLE IF NOT EXISTS events (
         id TEXT PRIMARY KEY,
-        createdAt TEXT,
+        createdAt TEXT NOT NULL,
         processedAt TEXT NULL,
-        name TEXT,
-        details TEXT
+        name TEXT NOT NULL,
+        details TEXT NOT NULL
       );
       `,
     );
@@ -53,8 +54,12 @@ class Database {
       FROM events
       WHERE
         DATE(createdAt) > DATE(:createdAfter)
-      ORDER BY createdAt desc
+      ORDER BY id desc
       `,
+    );
+
+    this.#updateEventProcessAtByIdStatement = this.#db.prepare(
+      `UPDATE events SET processedAt = :processedAt WHERE id = :id`,
     );
   }
 
@@ -92,6 +97,17 @@ class Database {
     }
 
     return parseEventRow(resultRow);
+  }
+
+  public updateEventProcessedAtById(id: string, processedAt: Date) {
+    const updated = this.#updateEventProcessAtByIdStatement.run({
+      id,
+      processedAt: processedAt.toISOString(),
+    });
+
+    if (updated.changes == 0) {
+      console.warn("processedAt could not be set for event with id: ", id);
+    }
   }
 
   public getEvents(createdAfter?: Date): EventRecord[] | undefined {

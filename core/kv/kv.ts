@@ -25,5 +25,7 @@ export function listenQueueHandler(msg: unknown) {
     `processing event with id: ${msg}\n\n${JSON.stringify(event, null, 2)}`,
   );
 
+  db.updateEventProcessedAtById(event.id, new Date());
+
   bus.dispatch(event.name, event);
 }
