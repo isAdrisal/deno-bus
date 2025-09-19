@@ -1,6 +1,6 @@
 import { EventRecord } from "../db/db.ts";
 
-export type EventHandler = (payload: EventRecord) => void;
+export type EventHandler = (payload: EventRecord) => Promise<void>;
 
 class EventBus {
   #handlers: Map<string, EventHandler[]> = new Map();
