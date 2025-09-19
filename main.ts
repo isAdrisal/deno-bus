@@ -3,8 +3,11 @@ import { logger } from "@hono/hono/logger";
 import { handleCreateEvent } from "./core/api/handle-create-event.ts";
 import { handleGetEvents } from "./core/api/handle-get-events.ts";
 import { kv, listenQueueHandler } from "./core/kv/kv.ts";
+import { registerConsumers } from "./consumers.ts";
 
 kv.listenQueue(listenQueueHandler);
+
+registerConsumers();
 
 const app = new Hono();
 app.use(logger());
